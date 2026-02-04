@@ -64,20 +64,13 @@ const ArcBreathing: React.FC<ArcBreathingProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Header text */}
-      <Text style={styles.safeText}>You're safe right now.</Text>
-
       {/* Session counter */}
       <Text style={styles.counterText}>
         Session {currentCycle + 1} of {totalCycles}
       </Text>
 
       <Text style={styles.instructionText}>
-        {phase === 'inhale'
-          ? 'Breathe in when the ball goes up'
-          : phase === 'hold'
-          ? 'Hold your breath'
-          : 'Breathe out when the ball goes down'}
+        Synchronize your breath to when the ball goes down
       </Text>
 
       {/* Arc and Ball Container */}
@@ -121,12 +114,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
-  },
-  safeText: {
-    fontFamily: fonts.regular,
-    fontSize: 14,
-    color: colors.text.secondary,
-    marginBottom: spacing.sm,
   },
   counterText: {
     fontFamily: fonts.medium,

@@ -1,0 +1,9 @@
+export interface UserProfile {
+  name: string;
+  age: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const MIN_AGE = 1;
+export const MAX_AGE = 120;

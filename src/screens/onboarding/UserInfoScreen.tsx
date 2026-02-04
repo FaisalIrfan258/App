@@ -9,6 +9,7 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -16,10 +17,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fonts } from '../../constants/theme';
 import { OnboardingStackParamList } from '../../types/onboarding';
 import { useOnboarding } from '../../contexts/OnboardingContext';
+import { userProfileService } from '../../services/userProfileService';
+import { UserProfile, MIN_AGE, MAX_AGE } from '../../types/profile';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -47,12 +49,28 @@ const UserInfoScreen: React.FC = () => {
       return;
     }
 
+    // Validate age
+    const ageNum = parseInt(age, 10);
+    if (isNaN(ageNum) || ageNum < MIN_AGE || ageNum > MAX_AGE) {
+      Alert.alert(
+        'Invalid Age',
+        `Please enter a valid age between ${MIN_AGE} and ${MAX_AGE}.`,
+        [{ text: 'OK', style: 'default' }]
+      );
+      return;
+    }
+
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-      // Store user info locally
-      await AsyncStorage.setItem('userName', name.trim());
-      await AsyncStorage.setItem('userAge', age.trim());
+      // Save user profile
+      const profile: UserProfile = {
+        name: name.trim(),
+        age: ageNum,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      await userProfileService.saveProfile(profile);
 
       // Complete onboarding - this will navigate to the main app
       await completeOnboarding();

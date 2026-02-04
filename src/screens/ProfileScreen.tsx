@@ -12,6 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useSubscription } from '../contexts/SubscriptionContext';
+import { useUserProfile } from '../contexts/UserProfileContext';
 import { RadialGradientBackground } from '../components/common/RadialGradientBackground';
 import { fonts } from '../constants/theme';
 
@@ -21,7 +22,8 @@ interface ProfileScreenProps {
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
   const { isProUser, restorePurchases } = useSubscription();
-  const userName = 'Roman';
+  const { profile, isLoading } = useUserProfile();
+  const userName = profile?.name || 'Guest';
 
   const handleHomePress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

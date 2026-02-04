@@ -43,9 +43,14 @@ const PanicCompletion: React.FC<PanicCompletionProps> = ({ onFinish }) => {
           },
         ]}
       >
-        {/* Affirmation Text */}
-        <Text style={styles.affirmationText}>
-          You didn't do anything wrong
+        {/* Header */}
+        <Text style={styles.headerText}>
+          You did it!
+        </Text>
+
+        {/* Subtext */}
+        <Text style={styles.subtextText}>
+          Your nervous system is beginning to calm down
         </Text>
 
         {/* Finish Button */}
@@ -72,13 +77,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  affirmationText: {
+  headerText: {
     fontFamily: fonts.bold,
-    fontSize: 24,
-    color: '#C3B7F9',
+    fontSize: 28,
+    color: colors.text.primary,
     textAlign: 'center',
-    lineHeight: 32,
+    lineHeight: 36,
+    marginBottom: spacing.lg,
+  },
+  subtextText: {
+    fontFamily: fonts.medium,
+    fontSize: 18,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 26,
     marginBottom: spacing.xxl * 4,
+    paddingHorizontal: spacing.lg,
   },
   finishButton: {
     backgroundColor: '#9886E5',
