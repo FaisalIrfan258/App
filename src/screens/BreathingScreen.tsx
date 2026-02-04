@@ -13,6 +13,7 @@ import BreathingCircle from '../components/breathing/BreathingCircle';
 import { useBreathingCycle, BreathingPhase } from '../hooks/useBreathingCycle';
 import { hapticService } from '../services/hapticService';
 import { colors, typography, spacing } from '../constants/theme';
+import { useProgress } from '../contexts/ProgressContext';
 
 interface BreathingScreenProps {
   navigation: any;
@@ -22,6 +23,7 @@ const BreathingScreen: React.FC<BreathingScreenProps> = ({ navigation }) => {
   const { phase, progress, countdown, cycleCount } = useBreathingCycle();
   const [showOptions, setShowOptions] = useState(false);
   const optionsOpacity = React.useRef(new Animated.Value(0)).current;
+  const { recordActivity } = useProgress();
 
   // Trigger haptics on phase change
   useEffect(() => {
@@ -78,6 +80,11 @@ const BreathingScreen: React.FC<BreathingScreenProps> = ({ navigation }) => {
 
   const handleClose = async () => {
     await hapticService.sessionComplete();
+    // Each cycle is ~19 seconds, calculate minutes
+    const minutes = Math.round((cycleCount * 19) / 60);
+    if (cycleCount > 0) {
+      await recordActivity(Math.max(minutes, 1));
+    }
     navigation.goBack();
   };
 

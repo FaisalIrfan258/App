@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { hapticService } from '../services/hapticService';
 import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { useProgress } from '../contexts/ProgressContext';
 
 interface UpliftingTextScreenProps {
   navigation: any;
@@ -58,6 +59,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const UpliftingTextScreen: React.FC<UpliftingTextScreenProps> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const { recordActivity } = useProgress();
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -79,6 +81,8 @@ const UpliftingTextScreen: React.FC<UpliftingTextScreenProps> = ({ navigation })
 
   const handleBack = async () => {
     await hapticService.buttonPress('light');
+    // Track 1 minute for uplifting text
+    await recordActivity(1);
     navigation.goBack();
   };
 

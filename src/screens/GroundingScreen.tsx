@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { hapticService } from '../services/hapticService';
 import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { useProgress } from '../contexts/ProgressContext';
 
 interface GroundingScreenProps {
   navigation: any;
@@ -46,6 +47,7 @@ const GroundingScreen: React.FC<GroundingScreenProps> = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const step = GROUNDING_STEPS[currentStep];
   const isLastStep = currentStep === GROUNDING_STEPS.length - 1;
+  const { recordActivity } = useProgress();
 
   const handleNext = async () => {
     await hapticService.selection();
@@ -53,6 +55,8 @@ const GroundingScreen: React.FC<GroundingScreenProps> = ({ navigation }) => {
     if (isLastStep) {
       // Complete grounding exercise
       await hapticService.sessionComplete();
+      // Track 2 minutes for grounding session
+      await recordActivity(2);
       navigation.goBack();
     } else {
       setCurrentStep(currentStep + 1);

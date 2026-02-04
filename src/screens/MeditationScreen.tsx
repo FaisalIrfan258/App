@@ -14,6 +14,7 @@ import * as Haptics from 'expo-haptics';
 import AnimatedWaveRings from '../components/session/AnimatedWaveRings';
 import { getCurrentSessionAudio } from '../services/sessionService';
 import { colors, fonts, spacing } from '../constants/theme';
+import { useProgress } from '../contexts/ProgressContext';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -29,6 +30,8 @@ const MeditationScreen: React.FC<MeditationScreenProps> = ({ navigation }) => {
   const [sessionInfo, setSessionInfo] = useState({ sessionNumber: 1, totalSessions: 4 });
   const soundRef = useRef<Audio.Sound | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const playbackStartTime = useRef<number | null>(null);
+  const { recordActivity } = useProgress();
 
   // Load audio on mount
   useEffect(() => {
@@ -71,11 +74,18 @@ const MeditationScreen: React.FC<MeditationScreenProps> = ({ navigation }) => {
     }
   };
 
-  const onPlaybackStatusUpdate = (status: any) => {
+  const onPlaybackStatusUpdate = async (status: any) => {
     if (status.isLoaded) {
       if (status.didJustFinish) {
         setIsPlaying(false);
-        // Could trigger session completion here
+        // Track activity completion
+        if (playbackStartTime.current) {
+          const playedMinutes = Math.round(
+            (Date.now() - playbackStartTime.current) / (1000 * 60)
+          );
+          await recordActivity(Math.max(playedMinutes, 1));
+          playbackStartTime.current = null;
+        }
       }
     }
   };
@@ -90,6 +100,9 @@ const MeditationScreen: React.FC<MeditationScreenProps> = ({ navigation }) => {
         await soundRef.current.pauseAsync();
         setIsPlaying(false);
       } else {
+        if (!playbackStartTime.current) {
+          playbackStartTime.current = Date.now();
+        }
         await soundRef.current.playAsync();
         setIsPlaying(true);
       }

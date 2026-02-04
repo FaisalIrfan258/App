@@ -5,20 +5,23 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useAuth } from '../contexts/AuthContext';
+import { useSubscription } from '../contexts/SubscriptionContext';
 import { RadialGradientBackground } from '../components/common/RadialGradientBackground';
+import { fonts } from '../constants/theme';
 
 interface ProfileScreenProps {
   navigation: any;
 }
 
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
-  const { userProfile, signOut, isAuthenticated } = useAuth();
+  const { isProUser, restorePurchases } = useSubscription();
+  const userName = 'Roman';
 
   const handleHomePress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -30,39 +33,25 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
     navigation.navigate('Panic');
   };
 
-  const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              await signOut();
-              Alert.alert('Signed Out', 'You have been signed out successfully.');
-            } catch (error: any) {
-              Alert.alert('Error', 'Failed to sign out. Please try again.');
-            }
-          },
-        },
-      ]
-    );
+  const handleManageSubscription = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Alert.alert('Manage Subscription', 'Subscription management coming soon!');
   };
 
-  const displayName = userProfile?.displayName || 'Guest User';
-  const displayEmail = userProfile?.email || 'Not signed in';
-  const authStatus = isAuthenticated
-    ? userProfile?.provider === 'anonymous'
-      ? 'Anonymous'
-      : 'Signed in'
-    : 'Not signed in';
+  const handleRestorePurchases = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      await restorePurchases();
+      Alert.alert('Success', 'Purchases restored successfully!');
+    } catch (error: any) {
+      Alert.alert('Error', 'Failed to restore purchases. Please try again.');
+    }
+  };
+
+  const handleUpgrade = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Alert.alert('Upgrade', 'Upgrade functionality coming soon!');
+  };
 
   return (
     <RadialGradientBackground>
@@ -77,60 +66,97 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
           <View style={styles.avatar}>
             <Ionicons name="person" size={48} color="#AB9FF0" />
           </View>
-          <Text style={styles.username}>{displayName}</Text>
-          <Text style={styles.subtitle}>{displayEmail}</Text>
-          <Text style={styles.authStatus}>{authStatus}</Text>
+          <Text style={styles.username}>{userName}</Text>
         </View>
 
-        {/* Menu Items */}
-        {isAuthenticated && (
-          <View style={styles.menuContainer}>
+        {/* Subscription Section */}
+        <View style={styles.subscriptionSection}>
+          {isProUser ? (
+            <>
+              <View style={styles.proBadgeContainer}>
+                <Ionicons name="star" size={20} color="#8B7FD4" />
+                <Text style={styles.proText}>Today Pro</Text>
+              </View>
+              <View style={styles.menuContainer}>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  activeOpacity={0.7}
+                  onPress={handleManageSubscription}
+                >
+                  <Ionicons name="settings-outline" size={24} color="#AB9FF0" />
+                  <Text style={styles.menuText}>Manage Subscription</Text>
+                  <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <View style={styles.menuContainer}>
+              <TouchableOpacity
+                style={styles.menuItem}
+                activeOpacity={0.7}
+                onPress={handleUpgrade}
+              >
+                <Ionicons name="star-outline" size={24} color="#AB9FF0" />
+                <Text style={styles.upgradeText}>Upgrade to Pro</Text>
+                <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Restore Purchases */}
+          <View style={[styles.menuContainer, { marginTop: 24 }]}>
             <TouchableOpacity
-              style={[styles.menuItem, styles.signOutItem]}
+              style={styles.menuItem}
               activeOpacity={0.7}
-              onPress={handleSignOut}
+              onPress={handleRestorePurchases}
             >
-              <Ionicons name="log-out-outline" size={24} color="#FF6B6B" />
-              <Text style={[styles.menuText, styles.signOutText]}>Sign Out</Text>
+              <Ionicons name="refresh-outline" size={24} color="#AB9FF0" />
+              <Text style={styles.menuText}>Restore Purchases</Text>
               <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.5)" />
             </TouchableOpacity>
           </View>
-        )}
+        </View>
       </SafeAreaView>
 
-      {/* Bottom Tabs */}
-      <SafeAreaView edges={['bottom']} style={styles.tabsWrapper}>
-        {/* Floating Help Button - overlaps tabs */}
-        <View style={styles.helpWrapper}>
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={handlePanicPress}
-          >
-            <View style={styles.helpButtonContainer}>
-              <LinearGradient
-                colors={['rgba(152, 134, 229, 0)', '#9886E5']}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-                style={styles.helpButton}
-              >
-                <Ionicons name="warning" size={20} color="#fff" />
-                <Text style={styles.helpText}>Need Help Now</Text>
-              </LinearGradient>
-            </View>
+      {/* Bottom Navigation */}
+      <SafeAreaView edges={['bottom']} style={styles.bottomNavWrapper}>
+        <View style={styles.bottomNav}>
+          <TouchableOpacity style={styles.navTab} onPress={handleHomePress}>
+            <Image
+              source={require('../../assets/home/nav-home.png')}
+              style={[styles.navIcon, { tintColor: '#FFFFFF' }]}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
-        </View>
 
-        <View style={styles.tabs}>
           <TouchableOpacity
-            style={styles.tab}
-            onPress={handleHomePress}
+            style={styles.navTab}
+            onPress={() => navigation.navigate('Progress')}
           >
-            <Ionicons name="home" size={24} color="#AB9FF0" />
-            <Text style={styles.tabText}>Home</Text>
+            <Image
+              source={require('../../assets/home/nav-progress-active.png')}
+              style={[styles.navIcon, { tintColor: '#FFFFFF' }]}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.tab}>
-            <Ionicons name="person" size={20} color="#AB9FF0" />
-            <Text style={styles.tabActive}>Roman</Text>
+
+          <TouchableOpacity
+            style={styles.navTab}
+            onPress={() => navigation.navigate('Community')}
+          >
+            <Image
+              source={require('../../assets/home/nav-community.png')}
+              style={[styles.navIcon, { tintColor: '#FFFFFF' }]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navTab}>
+            <Image
+              source={require('../../assets/home/nav-profile.png')}
+              style={[styles.navIcon, { tintColor: '#AB9FF0' }]}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -173,17 +199,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 4,
   },
-  subtitle: {
-    fontSize: 14,
-    fontWeight: '300',
-    color: '#A1A1B3',
-  },
-  authStatus: {
-    fontSize: 12,
-    fontWeight: '300',
-    color: 'rgba(255, 255, 255, 0.5)',
-    marginTop: 4,
-  },
   menuContainer: {
     backgroundColor: 'rgba(41, 41, 41, 0.40)',
     borderRadius: 16,
@@ -201,74 +216,54 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: '600',
-    color: '#FF6B6B',
+    color: '#fff',
     marginLeft: 16,
   },
-  tabsWrapper: {
-    position: 'relative',
+  subscriptionSection: {
+    marginBottom: 24,
   },
-  helpWrapper: {
-    position: 'absolute',
-    top: -40,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  helpButtonContainer: {
-    backgroundColor: '#000000',
-    borderRadius: 100,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    overflow: 'hidden',
-    shadowColor: 'rgba(130, 122, 178, 0.6)',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 1,
-    shadowRadius: 40,
-    elevation: 12,
-  },
-  helpButton: {
+  proBadgeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 26,
-    paddingHorizontal: 24,
+    backgroundColor: 'rgba(139, 127, 212, 0.2)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    alignSelf: 'center',
+    marginBottom: 16,
     gap: 8,
   },
-  helpText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: '800',
-    lineHeight: 14,
+  proText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#8B7FD4',
   },
-  tabs: {
+  upgradeText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#AB9FF0',
+    marginLeft: 16,
+  },
+  bottomNavWrapper: {
+    backgroundColor: 'transparent',
+  },
+  bottomNav: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    gap: 220,
     paddingVertical: 12,
-    paddingTop: 20,
+    paddingHorizontal: 20,
   },
-  tab: {
+  navTab: {
     alignItems: 'center',
     gap: 4,
   },
-  tabActive: {
-    color: '#AB9FF0',
-    fontSize: 12,
-    fontWeight: '700',
-    lineHeight: 24,
-    textAlign: 'center',
+  navIcon: {
+    width: 24,
+    height: 24,
   },
-  tabText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '300',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  signOutItem: {},
-  signOutText: {},
 });
 
 export default ProfileScreen;

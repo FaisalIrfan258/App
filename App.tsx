@@ -13,14 +13,26 @@ import PanicScreen from './src/screens/PanicScreen';
 import GroundingScreen from './src/screens/GroundingScreen';
 import UpliftingTextScreen from './src/screens/UpliftingTextScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import QuietAudioScreen from './src/screens/QuietAudioScreen';
+import SleepWindDownScreen from './src/screens/SleepWindDownScreen';
+import ThoughtSlowingScreen from './src/screens/ThoughtSlowingScreen';
+import MindResetScreen from './src/screens/MindResetScreen';
+import CommunityScreen from './src/screens/CommunityScreen';
+import CreatePostScreen from './src/screens/CreatePostScreen';
+import PostDetailScreen, { Post } from './src/screens/PostDetailScreen';
+import ProgressScreen from './src/screens/ProgressScreen';
 
 // Onboarding
 import OnboardingNavigator from './src/navigation/OnboardingNavigator';
 import { onboardingService } from './src/services/onboardingService';
 import { OnboardingProvider, useOnboarding } from './src/contexts/OnboardingContext';
 
-// Authentication
-import { AuthProvider } from './src/contexts/AuthContext';
+// Subscription
+import { revenueCatService } from './src/services/revenueCatService';
+import { SubscriptionProvider } from './src/contexts/SubscriptionContext';
+
+// Progress
+import { ProgressProvider } from './src/contexts/ProgressContext';
 
 // Transitions
 import { forInstagramTransition, instagramTransitionSpec } from './src/navigation/transitions';
@@ -32,6 +44,14 @@ export type RootStackParamList = {
   Grounding: undefined;
   UpliftingText: undefined;
   Profile: undefined;
+  QuietAudio: undefined;
+  SleepWindDown: undefined;
+  ThoughtSlowing: undefined;
+  MindReset: undefined;
+  Community: { newPost?: { title: string; content: string; isAnonymous: boolean } } | undefined;
+  CreatePost: undefined;
+  PostDetail: { post: Post };
+  Progress: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -89,6 +109,64 @@ const MainNavigator: React.FC = () => {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="QuietAudio"
+        component={QuietAudioScreen}
+        options={{
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="SleepWindDown"
+        component={SleepWindDownScreen}
+        options={{
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="ThoughtSlowing"
+        component={ThoughtSlowingScreen}
+        options={{
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="MindReset"
+        component={MindResetScreen}
+        options={{
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="Progress"
+        component={ProgressScreen}
+        options={{
+          cardStyleInterpolator: forInstagramTransition,
+          transitionSpec: instagramTransitionSpec,
+        }}
+      />
+      <Stack.Screen
+        name="Community"
+        component={CommunityScreen}
+        options={{
+          cardStyleInterpolator: forInstagramTransition,
+          transitionSpec: instagramTransitionSpec,
+        }}
+      />
+      <Stack.Screen
+        name="CreatePost"
+        component={CreatePostScreen}
+        options={{
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="PostDetail"
+        component={PostDetailScreen}
+        options={{
+          presentation: 'modal',
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -117,6 +195,7 @@ export default function App() {
 
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
   const [initialOnboardingCompleted, setInitialOnboardingCompleted] = useState(false);
+  const [isRevenueCatReady, setIsRevenueCatReady] = useState(false);
 
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -131,7 +210,20 @@ export default function App() {
     checkOnboarding();
   }, []);
 
-  if (!fontsLoaded || isCheckingOnboarding) {
+  useEffect(() => {
+    const initializeRevenueCat = async () => {
+      try {
+        await revenueCatService.initialize();
+        setIsRevenueCatReady(true);
+      } catch (error) {
+        // Continue without RevenueCat (graceful degradation)
+        setIsRevenueCatReady(true);
+      }
+    };
+    initializeRevenueCat();
+  }, []);
+
+  if (!fontsLoaded || isCheckingOnboarding || !isRevenueCatReady) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0D0D0F' }}>
         <ActivityIndicator size="large" color="#8B7FD4" />
@@ -141,11 +233,13 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <OnboardingProvider initialCompleted={initialOnboardingCompleted}>
-          <AppNavigator />
-        </OnboardingProvider>
-      </AuthProvider>
+      <ProgressProvider>
+        <SubscriptionProvider>
+          <OnboardingProvider initialCompleted={initialOnboardingCompleted}>
+            <AppNavigator />
+          </OnboardingProvider>
+        </SubscriptionProvider>
+      </ProgressProvider>
     </SafeAreaProvider>
   );
 }

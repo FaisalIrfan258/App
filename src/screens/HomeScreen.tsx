@@ -1,118 +1,248 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
+  Image,
   ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { RadialGradientBackground } from '../components/common/RadialGradientBackground';
+import { fonts } from '../constants/theme';
 
-// Nature illustrations array
-const NATURE_IMAGES = [
-  require('../../assets/nature-illustrations/Art Pin.jpg'),
-  require('../../assets/nature-illustrations/Arte Pin.jpg'),
-  require("../../assets/nature-illustrations/Fond d'ecran Pin.jpg"),
-  require('../../assets/nature-illustrations/Pin on My.jpg'),
-  require('../../assets/nature-illustrations/Sheep on Green Field.png'),
-  require('../../assets/nature-illustrations/Tranh Hieu Ung.jpg'),
-  require('../../assets/nature-illustrations/Vibes Pin.jpg'),
-  require('../../assets/nature-illustrations/Wall Art Pin.jpg'),
+// Colors
+const COLORS = {
+  primary: '#AB9FF0',
+  primaryDark: '#705AAF',
+  primaryLight: '#9583E1',
+  background: '#000000',
+  cardBg: 'rgba(41, 41, 41, 0.40)',
+  textPrimary: '#FFFFFF',
+  textSecondary: 'rgba(255, 255, 255, 0.70)',
+  textMuted: 'rgba(255, 255, 255, 0.40)',
+  tagBg: 'rgba(71, 56, 135, 0.50)',
+};
+
+// Support Tools Data
+const SUPPORT_TOOLS = [
+  {
+    id: 'quiet-audio',
+    title: 'Quiet audio space',
+    subtitle: 'Soothing nature sounds',
+    tag: 'Meditations',
+    image: require('../../assets/home/meditations.jpg'),
+    screen: 'QuietAudio',
+  },
+  {
+    id: 'sleep',
+    title: 'Sleep wind down',
+    subtitle: 'Prep for sleep',
+    tag: 'Sleep',
+    image: require('../../assets/home/sleep.jpg'),
+    screen: 'SleepWindDown',
+  },
+  {
+    id: 'thought-slowing',
+    title: 'Thought Slowing',
+    subtitle: 'Ease spiraling',
+    tag: null,
+    image: require('../../assets/home/thought-slowing.webp'),
+    screen: 'ThoughtSlowing',
+  },
+  {
+    id: 'mind-reset',
+    title: '1 Min Mind Reset',
+    subtitle: 'Quick reset',
+    tag: null,
+    image: require('../../assets/home/mind-reset.jpg'),
+    screen: 'MindReset',
+  },
 ];
 
 export default function HomeScreen({ navigation }: any) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const userName = 'Roman';
+  const streakCount = 2;
 
-  // Select random image on component mount
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * NATURE_IMAGES.length);
-    setCurrentImageIndex(randomIndex);
-  }, []);
+  const handleCommunityPress = () => {
+    navigation.navigate('Community');
+  };
+
   return (
     <RadialGradientBackground>
-      <SafeAreaView style={styles.safe} edges={['top']}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.subtitle}>You're safe to start.</Text>
-          <Text style={styles.title}>Roman</Text>
-        </View>
-
-        {/* Main Card */}
-        <View style={styles.card}>
-          <ImageBackground
-            source={NATURE_IMAGES[currentImageIndex]}
-            resizeMode="cover"
-            style={styles.image}
-            imageStyle={styles.imageRadius}
-          >
-            <Text style={styles.today}>today</Text>
-          </ImageBackground>
-
-          {/* Bottom Section: Headphone + Button */}
-          <View style={styles.cardBottom}>
-            {/* Headphone Message */}
-            <View style={styles.headphoneRow}>
-              <Ionicons name="headset" size={16} color="rgba(255, 255, 255, 0.90)" style={{ marginRight: 8 }} />
-              <Text style={styles.headphoneText}>
-                Use headphone for best experience
-              </Text>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* Header Row */}
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <Image
+                source={require('../../assets/home/today-logo.png')}
+                style={styles.logoIcon}
+                resizeMode="contain"
+              />
+              <Text style={styles.logoText}>today</Text>
             </View>
-
-            {/* Start Button */}
-            <LinearGradient
-              colors={['#705AAF', '#9583E1']}
-              start={{ x: 0, y: 0.5 }}
-              end={{ x: 1, y: 0.5 }}
-              style={styles.startButton}
-            >
-              <TouchableOpacity
-                activeOpacity={0.85}
-                onPress={() => navigation.navigate('Meditation')}
-                style={styles.startButtonTouchable}
-              >
-                <Text style={styles.startText}>Start</Text>
-              </TouchableOpacity>
-            </LinearGradient>
+            <View style={styles.streakPill}>
+              <Image
+                source={require('../../assets/home/fire-icon.png')}
+                style={styles.fireIcon}
+                resizeMode="contain"
+              />
+              <Text style={styles.streakText}>{streakCount}</Text>
+            </View>
           </View>
-        </View>
+
+          {/* Greeting Section */}
+          <View style={styles.greetingSection}>
+            <Text style={styles.greetingSubtitle}>How are you feeling?</Text>
+            <Text style={styles.greetingTitle}>{userName}</Text>
+          </View>
+
+          {/* Reset My Mind Card */}
+          <LinearGradient
+            colors={['rgba(55, 45, 85, 0.35)', 'rgba(149, 131, 225, 0.35)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.resetCard}
+          >
+            <View style={styles.resetCardInner}>
+              <View style={styles.resetCardLeft}>
+                <Text style={styles.resetTitle}>Reset My Mind</Text>
+                <View style={styles.resetInfoRow}>
+                  <Ionicons name="refresh" size={12} color={COLORS.textSecondary} />
+                  <Text style={styles.resetInfoText}>Everyday</Text>
+                </View>
+                <View style={styles.resetInfoRow}>
+                  <Ionicons name="time-outline" size={12} color={COLORS.textSecondary} />
+                  <Text style={styles.resetInfoText}>7 minute</Text>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={() => navigation.navigate('Meditation')}
+                >
+                  <LinearGradient
+                    colors={[COLORS.primaryDark, COLORS.primaryLight]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={styles.startButton}
+                  >
+                    <Text style={styles.startButtonText}>Start</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+              <Image
+                source={require('../../assets/home/reset-mind.jpg')}
+                style={styles.resetImage}
+                resizeMode="cover"
+              />
+            </View>
+          </LinearGradient>
+
+          {/* Support Tools Section */}
+          <View style={styles.supportToolsHeader}>
+            <Text style={styles.supportToolsTitle}>Support Tools</Text>
+            <Ionicons name="chevron-forward" size={20} color={COLORS.textSecondary} />
+          </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.supportToolsScroll}
+          >
+            {SUPPORT_TOOLS.map((tool) => (
+              <TouchableOpacity
+                key={tool.id}
+                activeOpacity={0.85}
+                onPress={() => navigation.navigate(tool.screen)}
+                style={styles.toolCard}
+              >
+                <ImageBackground
+                  source={tool.image}
+                  style={styles.toolCardImage}
+                  imageStyle={styles.toolCardImageStyle}
+                >
+                  <Text style={styles.toolCardWatermark}>today</Text>
+                </ImageBackground>
+                <View style={styles.toolCardContent}>
+                  {tool.tag && (
+                    <View style={styles.toolCardTag}>
+                      <Text style={styles.toolCardTagText}>{tool.tag}</Text>
+                    </View>
+                  )}
+                  <Text style={styles.toolCardTitle}>{tool.title}</Text>
+                  <Text style={styles.toolCardSubtitle}>{tool.subtitle}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </ScrollView>
       </SafeAreaView>
 
-      {/* Bottom Tabs */}
-      <SafeAreaView edges={['bottom']} style={styles.tabsWrapper}>
-        {/* Floating Help Button - overlaps tabs */}
-        <View style={styles.helpWrapper}>
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={() => navigation.navigate('Panic')}
-          >
-            <View style={styles.helpButtonContainer}>
-              <LinearGradient
-                colors={['rgba(152, 134, 229, 0)', '#9886E5']}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-                style={styles.helpButton}
-              >
-                <Ionicons name="warning" size={20} color="#fff" />
-                <Text style={styles.helpText}>Need Help Now</Text>
-              </LinearGradient>
-            </View>
-          </TouchableOpacity>
-        </View>
+      {/* Need Help Now Button */}
+      <View style={styles.helpButtonWrapper}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => navigation.navigate('Panic')}
+        >
+          <View style={styles.helpButtonContainer}>
+            <LinearGradient
+              colors={['rgba(152, 134, 229, 0)', '#9886E5']}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.helpButton}
+            >
+              <Ionicons name="warning" size={20} color="#fff" />
+              <Text style={styles.helpButtonText}>Need Help Now</Text>
+            </LinearGradient>
+          </View>
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.tabs}>
-          <TouchableOpacity style={styles.tab}>
-            <Ionicons name="home" size={24} color="#AB9FF0" />
-            <Text style={styles.tabActive}>Home</Text>
+      {/* Bottom Navigation */}
+      <SafeAreaView edges={['bottom']} style={styles.bottomNavWrapper}>
+        <View style={styles.bottomNav}>
+          <TouchableOpacity style={styles.navTab}>
+            <Image
+              source={require('../../assets/home/nav-home.png')}
+              style={[styles.navIcon, { tintColor: COLORS.primary }]}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
+
           <TouchableOpacity
-            style={styles.tab}
+            style={styles.navTab}
+            onPress={() => navigation.navigate('Progress')}
+          >
+            <Image
+              source={require('../../assets/home/nav-progress-active.png')}
+              style={[styles.navIcon, { tintColor: COLORS.textPrimary }]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.navTab} onPress={handleCommunityPress}>
+            <Image
+              source={require('../../assets/home/nav-community.png')}
+              style={[styles.navIcon, { tintColor: COLORS.textPrimary }]}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.navTab}
             onPress={() => navigation.navigate('Profile')}
           >
-            <Ionicons name="person" size={20} color="#AB9FF0" />
-            <Text style={styles.tabText}>Roman</Text>
+            <Image
+              source={require('../../assets/home/nav-profile.png')}
+              style={[styles.navIcon, { tintColor: COLORS.textPrimary }]}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -121,82 +251,187 @@ export default function HomeScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, paddingHorizontal: 24 },
-  header: { marginTop: 12, marginBottom: 28 },
-  subtitle: { color: '#A1A1B3', fontSize: 15 },
-  title: { color: '#fff', fontSize: 34, fontWeight: '700' },
-  card: {
-    backgroundColor: 'rgba(41, 41, 41, 0.40)',
-    borderRadius: 50,
-    padding: 2,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.20)',
+  container: {
+    flex: 1,
   },
-  image: {
-    height: 340,
-    justifyContent: 'flex-start',
+  scrollContent: {
+    paddingHorizontal: 21,
+    paddingBottom: 140,
   },
-  imageRadius: {
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.20)',
-  },
-  today: {
-    marginTop: 12,
-    marginLeft: 19,
-    fontSize: 24,
-    color: 'rgba(255, 255, 255, 0.40)',
-    fontWeight: '700',
-    lineHeight: 30,
-  },
-  cardBottom: {
-    paddingVertical: 8,
+  // Header
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 20,
   },
-  headphoneRow: {
+  logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
+    gap: 8,
+  },
+  logoIcon: {
+    width: 24,
+    height: 24,
+  },
+  logoText: {
+    fontSize: 26,
+    fontFamily: fonts.bold,
+    color: COLORS.primary,
+  },
+  streakPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(30, 30, 30, 0.8)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 4,
+  },
+  fireIcon: {
+    width: 16,
+    height: 16,
+  },
+  streakText: {
+    fontSize: 14,
+    fontFamily: fonts.medium,
+    color: COLORS.textPrimary,
+  },
+  // Greeting
+  greetingSection: {
+    marginBottom: 20,
+  },
+  greetingSubtitle: {
+    fontSize: 16,
+    fontFamily: fonts.regular,
+    color: COLORS.textSecondary,
+    marginBottom: 4,
+  },
+  greetingTitle: {
+    fontSize: 32,
+    fontFamily: fonts.medium,
+    color: COLORS.textPrimary,
+  },
+  // Reset My Mind Card
+  resetCard: {
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  resetCardInner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  resetCardLeft: {
+    flex: 1,
+  },
+  resetTitle: {
+    fontSize: 18,
+    fontFamily: fonts.medium,
+    color: COLORS.textPrimary,
     marginBottom: 12,
   },
-  headphoneText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '300',
-    letterSpacing: 0.5,
+  resetInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  resetInfoText: {
+    fontSize: 11,
+    fontFamily: fonts.regular,
+    color: COLORS.textSecondary,
   },
   startButton: {
-    width: 160,
-    height: 45,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 12,
+    alignSelf: 'flex-start',
+  },
+  startButtonText: {
+    fontSize: 14,
+    fontFamily: fonts.bold,
+    color: COLORS.textPrimary,
+  },
+  resetImage: {
+    width: 140,
+    height: 100,
     borderRadius: 16,
-    marginTop: 4,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.20)',
+  },
+  // Support Tools
+  supportToolsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  supportToolsTitle: {
+    fontSize: 18,
+    fontFamily: fonts.medium,
+    color: COLORS.textPrimary,
+  },
+  supportToolsScroll: {
+    paddingRight: 21,
+    gap: 14,
+  },
+  toolCard: {
+    width: 180,
+    backgroundColor: COLORS.cardBg,
+    borderRadius: 16,
     overflow: 'hidden',
   },
-  startButtonTouchable: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+  toolCardImage: {
+    width: 180,
+    height: 150,
+    justifyContent: 'flex-start',
+    paddingTop: 10,
+    paddingLeft: 10,
   },
-  startText: {
-    color: '#fff',
+  toolCardImageStyle: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  toolCardWatermark: {
+    fontSize: 14,
+    fontFamily: fonts.bold,
+    color: 'rgba(255, 255, 255, 0.4)',
+  },
+  toolCardContent: {
+    padding: 12,
+  },
+  toolCardTag: {
+    backgroundColor: COLORS.tagBg,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  },
+  toolCardTagText: {
+    fontSize: 10,
+    fontFamily: fonts.medium,
+    color: COLORS.primary,
+  },
+  toolCardTitle: {
     fontSize: 16,
-    fontWeight: '800',
-    lineHeight: 16,
-    textAlign: 'center',
+    fontFamily: fonts.bold,
+    color: COLORS.textPrimary,
+    marginBottom: 4,
   },
-  tabsWrapper: {
-    position: 'relative',
+  toolCardSubtitle: {
+    fontSize: 12,
+    fontFamily: fonts.regular,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
-  helpWrapper: {
+  // Need Help Now Button
+  helpButtonWrapper: {
     position: 'absolute',
-    top: -40,
+    bottom: 90,
     left: 0,
     right: 0,
     alignItems: 'center',
@@ -218,40 +453,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 26,
+    paddingVertical: 18,
     paddingHorizontal: 24,
     gap: 8,
   },
-  helpText: {
+  helpButtonText: {
     color: '#fff',
     fontSize: 15,
-    fontWeight: '800',
-    lineHeight: 14,
+    fontFamily: fonts.bold,
   },
-  tabs: {
+  // Bottom Navigation
+  bottomNavWrapper: {
+    backgroundColor: 'transparent',
+  },
+  bottomNav: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    gap: 220,
     paddingVertical: 12,
-    paddingTop: 20,
+    paddingHorizontal: 20,
   },
-  tab: {
+  navTab: {
     alignItems: 'center',
     gap: 4,
   },
-  tabActive: {
-    color: '#AB9FF0',
-    fontSize: 12,
-    fontWeight: '700',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '300',
-    lineHeight: 24,
-    textAlign: 'center',
+  navIcon: {
+    width: 24,
+    height: 24,
   },
 });

@@ -11,8 +11,8 @@ import MotivationalScreen from '../screens/onboarding/MotivationalScreen';
 import CommitmentScreen from '../screens/onboarding/CommitmentScreen';
 import ControlScreen from '../screens/onboarding/ControlScreen';
 import ReviewScreen from '../screens/onboarding/ReviewScreen';
-import SignInScreen from '../screens/onboarding/SignInScreen';
 import PaywallScreen from '../screens/onboarding/PaywallScreen';
+import UserInfoScreen from '../screens/onboarding/UserInfoScreen';
 
 const Stack = createStackNavigator<OnboardingStackParamList>();
 
@@ -84,8 +84,8 @@ const OnboardingNavigator: React.FC = () => {
       <Stack.Screen name="Commitment" component={CommitmentScreen} />
       <Stack.Screen name="Control" component={ControlScreen} />
       <Stack.Screen name="Review" component={ReviewScreen} />
-      <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="Paywall" component={PaywallScreen} />
+      <Stack.Screen name="UserInfo" component={UserInfoScreen} />
     </Stack.Navigator>
   );
 };

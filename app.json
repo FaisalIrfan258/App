@@ -16,8 +16,12 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.today.panicrelief",
       "infoPlist": {
-        "UIBackgroundModes": ["audio"],
-        "NSMicrophoneUsageDescription": "This app does not use the microphone"
+        "UIBackgroundModes": [
+          "audio",
+          "audio"
+        ],
+        "NSMicrophoneUsageDescription": "This app does not use the microphone",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -26,10 +30,19 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.today.panicrelief"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "22b29882-7e0d-42e1-a54b-3b5b3f9374fd"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

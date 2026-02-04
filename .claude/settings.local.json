@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(npm install:*)",
+      "Bash(cd:*)",
+      "Bash(npx tsc:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(find:*)",
+      "Bash(kill:*)",
+      "Bash(cd /Users/romanahmed/Desktop/Today\\\\ App/today-app && npx expo start --clear --tunnel:*)",
+      "Bash(cd /Users/romanahmed/Desktop/Today\\\\ App/today-app && npx expo start:*)",
+      "Bash(pkill:*)",
+      "Bash(npx expo start --dev-client --no-dev --minify)"
+    ]
+  }
+}

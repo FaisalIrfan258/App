@@ -1,11 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 import { fonts, spacing } from '../../constants/theme';
 import { OnboardingStackParamList } from '../../types/onboarding';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type NavigationProp = StackNavigationProp<OnboardingStackParamList, 'Control'>;
 
@@ -46,10 +50,9 @@ const ReassuranceItem: React.FC<ReassuranceItemProps> = ({ text, delay }) => {
       ]}
     >
       <Ionicons
-        name="checkmark"
-        size={24}
+        name="checkmark-circle"
+        size={21}
         color="#C3B7F9"
-        style={{ fontWeight: 'bold' }}
       />
       <Text style={styles.itemText}>{text}</Text>
     </Animated.View>
@@ -71,82 +74,87 @@ const ControlScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.container}>
+      {/* Radial gradient background - purple from bottom fading to transparent */}
+      <LinearGradient
+        colors={['#836FC9', 'rgba(131, 111, 201, 0)', 'rgba(0, 0, 0, 0)']}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0.5, y: 1 }}
+        end={{ x: 0.5, y: 0 }}
+        style={styles.radialGradient}
+      />
 
-      {/* Large black decorative circle */}
-      <View style={styles.decorativeCircle} />
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        {/* Content */}
+        <View style={styles.contentContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>You stay in control.</Text>
+          </View>
 
-      <View style={styles.content}>
-        {/* Heading */}
-        <Text style={styles.title}>You stay in control.</Text>
-
-        {/* Reassurance items */}
-        <View style={styles.itemsContainer}>
-          {reassurances.map((item, index) => (
-            <ReassuranceItem key={index} text={item.text} delay={item.delay} />
-          ))}
+          <View style={styles.cardsContainer}>
+            {reassurances.map((item, index) => (
+              <ReassuranceItem key={index} text={item.text} delay={item.delay} />
+            ))}
+          </View>
         </View>
-      </View>
 
-      {/* Button */}
-      <View style={styles.bottomContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleContinue}
-          accessibilityLabel="I'm ready"
-          accessibilityHint="Proceeds to the review screen"
-          activeOpacity={0.8}
-        >
-          <Text style={styles.buttonText}>I'm ready</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+        {/* Continue Button */}
+        <View style={styles.bottomContainer}>
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={handleContinue}
+            activeOpacity={0.9}
+            accessibilityLabel="I'm ready"
+            accessibilityHint="Proceeds to the review screen"
+          >
+            <Text style={styles.continueButtonText}>I'm ready</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#AB9FF3',
-  },
-  decorativeCircle: {
-    position: 'absolute',
-    width: 800,
-    height: 800,
-    borderRadius: 9999,
     backgroundColor: '#000000',
-    left: -199,
-    top: 134,
   },
-  content: {
+  radialGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  contentContainer: {
     flex: 1,
     paddingHorizontal: 24,
   },
+  textContainer: {
+    alignItems: 'center',
+    marginTop: SCREEN_HEIGHT * 0.15,
+    marginBottom: SCREEN_HEIGHT * 0.08,
+    paddingHorizontal: 24,
+    gap: 4,
+  },
   title: {
-    fontFamily: fonts.medium,
-    fontSize: 22,
-    lineHeight: 22,
+    fontFamily: fonts.bold,
+    fontSize: 24,
     color: '#FFFFFF',
     textAlign: 'center',
-    position: 'absolute',
-    top: 215,
-    left: 24,
-    right: 24,
+    lineHeight: 24,
   },
-  itemsContainer: {
-    position: 'absolute',
-    top: 309.5,
-    left: 24,
-    right: 24,
+  cardsContainer: {
     gap: 10,
   },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 100,
     paddingVertical: 20,
     paddingHorizontal: 24,
@@ -155,31 +163,29 @@ const styles = StyleSheet.create({
   itemText: {
     fontFamily: fonts.regular,
     fontSize: 14,
-    lineHeight: 16,
     color: '#FFFFFF',
-    flex: 1,
+    lineHeight: 16,
   },
   bottomContainer: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: 40,
-    zIndex: 1,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+    alignItems: 'center',
   },
-  button: {
-    width: 354,
-    height: 60,
+  continueButton: {
     backgroundColor: '#FFFFFF',
     borderRadius: 100,
     paddingVertical: 19,
     paddingHorizontal: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
+    height: 60,
+    width: SCREEN_WIDTH - 48,
   },
-  buttonText: {
+  continueButtonText: {
     fontFamily: fonts.medium,
     fontSize: 16,
-    fontWeight: '500',
     color: '#000000',
+    textAlign: 'center',
   },
 });
 

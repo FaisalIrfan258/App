@@ -11,8 +11,8 @@ export type OnboardingStackParamList = {
   Commitment: undefined;
   Control: undefined;
   Review: undefined;
-  SignIn: undefined;
   Paywall: undefined;
+  UserInfo: undefined;
 };
 
 // Screen names for progress tracking (excluding Splash)
@@ -23,8 +23,8 @@ export const ONBOARDING_SCREENS = [
   'Commitment',
   'Control',
   'Review',
-  'SignIn',
   'Paywall',
+  'UserInfo',
 ] as const;
 
 export type OnboardingScreen = (typeof ONBOARDING_SCREENS)[number];

@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, fonts, spacing, borderRadius, shadows } from '../../constants/theme';
-import StarRating from './StarRating';
+import { fonts, spacing } from '../../constants/theme';
 
 interface ReviewCardProps {
   name: string;
@@ -11,24 +10,32 @@ interface ReviewCardProps {
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ name, review, rating }) => {
-  const initials = name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase();
+  // Render star icons
+  const renderStars = () => {
+    const stars = [];
+    for (let i = 0; i < rating; i++) {
+      stars.push(
+        <Ionicons key={i} name="star" size={16} color="#FFB800" />
+      );
+    }
+    return stars;
+  };
 
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <StarRating rating={rating} size={16} showNumber={false} />
+      {/* Stars */}
+      <View style={styles.starsContainer}>
+        {renderStars()}
       </View>
-      <Text style={styles.reviewText} numberOfLines={4}>
+
+      {/* Review Text */}
+      <Text style={styles.reviewText}>
         {review}
       </Text>
+
+      {/* Footer with Avatar and Name */}
       <View style={styles.footer}>
-        <View style={styles.avatar}>
-          <Text style={styles.initials}>{initials}</Text>
-        </View>
+        <View style={styles.avatar} />
         <Text style={styles.name}>{name}</Text>
       </View>
     </View>
@@ -37,49 +44,43 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ name, review, rating }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#F4F3F7', // Light cream background
-    borderRadius: 30, // Updated from borderRadius.lg
-    padding: spacing.lg,
-    width: '100%', // Full width with margins handled by parent
-    // Custom shadow matching design specs
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.1,
-    shadowRadius: 70, // Reduced from 140 for better performance
-    elevation: 10, // Android shadow
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 20,
+    paddingTop: 18,
+    paddingBottom: 18,
+    paddingHorizontal: 20,
+    width: '100%',
+    height: 170,
+    justifyContent: 'space-between',
   },
-  header: {
-    marginBottom: spacing.md,
+  starsContainer: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 12,
   },
   reviewText: {
-    fontFamily: fonts.light, // Using light weight (300)
-    fontSize: 14, // Updated from 15
-    color: '#1D1A23', // Dark text color
-    lineHeight: 19.6, // Matching design specs
-    marginBottom: spacing.lg,
+    fontFamily: fonts.light,
+    fontSize: 13,
+    color: '#FFFFFF',
+    lineHeight: 18.2,
+    flex: 1,
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
   },
   avatar: {
-    width: 24, // Updated from 32
-    height: 24, // Updated from 32
-    borderRadius: 12, // Updated from 16
-    backgroundColor: colors.primary.default,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.sm,
-  },
-  initials: {
-    fontFamily: fonts.bold,
-    fontSize: 10, // Reduced proportionally
-    color: colors.text.inverse,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#8576B6',
   },
   name: {
-    fontFamily: fonts.bold, // Using bold weight (600)
-    fontSize: 16, // Updated from 15
-    color: '#1D1A23', // Dark text color
+    fontFamily: fonts.semiBold,
+    fontSize: 14,
+    color: '#FFFFFF',
+    lineHeight: 16,
   },
 });
 

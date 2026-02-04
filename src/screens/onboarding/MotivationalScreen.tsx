@@ -1,14 +1,31 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { LinearGradient } from 'expo-linear-gradient';
 import { fonts, spacing } from '../../constants/theme';
 import { OnboardingStackParamList } from '../../types/onboarding';
 import Button from '../../components/common/Button';
-import SkipButton from '../../components/onboarding/SkipButton';
 
 type NavigationProp = StackNavigationProp<OnboardingStackParamList, 'Motivational'>;
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// Progress Circle Component using PNG
+const ProgressCircle: React.FC = () => (
+  <Image
+    source={require('../../../assets/images/progress-circle.png')}
+    style={styles.progressCircle}
+    resizeMode="contain"
+  />
+);
 
 const MotivationalScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -18,85 +35,149 @@ const MotivationalScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Background Image - Absolute positioned to cover entire screen */}
-      <ImageBackground
-        source={require('../../../assets/images/camping-background.png')}
+    <View style={styles.container}>
+      {/* Background Image - offset positioning like reference */}
+      <Image
+        source={require('../../../assets/images/mountain-landscape.png')}
         style={styles.backgroundImage}
         resizeMode="cover"
-      >
-        {/* Content */}
-        <View style={styles.content}>
-          <View style={styles.textContainer}>
-            <Text style={styles.mainText}>You're not broken.</Text>
-            <Text style={styles.mainText}>
-              Your nervous system is just overloaded.
-            </Text>
-            <Text style={styles.secondaryText}>
-              Millions of people feel this way.
-            </Text>
-          </View>
+      />
+
+      {/* Top Gradient - transparent at bottom to black at top (360deg gradient) */}
+      <LinearGradient
+        colors={['rgba(0, 0, 0, 0)', '#000000']}
+        locations={[0, 1]}
+        start={{ x: 0.5, y: 1 }}
+        end={{ x: 0.5, y: 0 }}
+        style={styles.topGradient}
+      />
+
+      {/* Bottom Gradient - transparent to black at bottom */}
+      <LinearGradient
+        colors={['rgba(0, 0, 0, 0)', '#000000']}
+        locations={[0, 1]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={styles.bottomGradient}
+      />
+
+      {/* Subtle overall dark overlay */}
+      <View style={styles.subtleOverlay} />
+
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        {/* Header Text */}
+        <View style={styles.headerSection}>
+          <Text style={styles.titleText}>You're not broken.</Text>
+          <View style={styles.titleGap} />
+          <Text style={styles.titleText}>Your nervous system is just</Text>
+          <Text style={styles.titleText}>overloaded.</Text>
         </View>
 
-        {/* Bottom buttons */}
-        <View style={styles.bottomContainer}>
-          <SkipButton />
-          <Button
-            variant="onboarding"
-            onPress={handleContinue}
-            accessibilityLabel="Continue to next step"
-            accessibilityHint="Proceeds to the commitment screen"
-          >
-            Continue
-          </Button>
+        {/* Journey Visualization */}
+        <View style={styles.journeySection}>
+          <ProgressCircle />
         </View>
-      </ImageBackground>
-    </SafeAreaView>
+
+        {/* Bottom Section */}
+        <View style={styles.bottomSection}>
+          <Text style={styles.supportText}>Millions of people feel this way.</Text>
+
+          <View style={styles.buttonWrapper}>
+            <Button
+              variant="onboarding"
+              onPress={handleContinue}
+              accessibilityLabel="Continue to next step"
+              accessibilityHint="Proceeds to the commitment screen"
+            >
+              Continue
+            </Button>
+          </View>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000', // Fallback background
+    backgroundColor: '#000000',
   },
   backgroundImage: {
+    position: 'absolute',
+    width: SCREEN_WIDTH * 1.55,
+    height: SCREEN_HEIGHT * 0.95,
+    left: -SCREEN_WIDTH * 0.5,
+    top: SCREEN_HEIGHT * 0.145,
+  },
+  topGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: SCREEN_HEIGHT * 0.68, // ~600/874 from reference
+    zIndex: 1,
+  },
+  bottomGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: SCREEN_HEIGHT * 0.32, // ~280/874 from reference
+    zIndex: 1,
+  },
+  subtleOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.10)',
+    zIndex: 2,
+  },
+  safeArea: {
     flex: 1,
-    width: '100%',
-    height: '100%',
+    zIndex: 3,
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
+  headerSection: {
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: 80,
+    paddingTop: 40,
+    paddingHorizontal: 38,
   },
-  textContainer: {
-    alignItems: 'center',
-    gap: 4,
-    width: 280,
-    alignSelf: 'center',
-  },
-  mainText: {
+  titleText: {
     fontFamily: fonts.bold,
     fontSize: 22,
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 26,
   },
-  secondaryText: {
+  titleGap: {
+    height: 18,
+  },
+  journeySection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressCircle: {
+    width: SCREEN_WIDTH * 0.85,
+    height: SCREEN_WIDTH * 0.85,
+  },
+  bottomSection: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  supportText: {
     fontFamily: fonts.light,
-    fontSize: 16,
+    fontSize: 18,
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 16,
-    marginTop: 16,
+    marginBottom: 24,
   },
-  bottomContainer: {
+  buttonWrapper: {
+    width: '100%',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
   },
 });
 

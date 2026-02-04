@@ -28,7 +28,7 @@ export const onboardingService = {
     try {
       await AsyncStorage.setItem(ONBOARDING_KEY, 'completed');
     } catch (error) {
-      console.error('Failed to mark onboarding as completed:', error);
+      // Silently fail - onboarding state won't persist
     }
   },
 
@@ -41,7 +41,7 @@ export const onboardingService = {
       const updated = { ...existing, ...data };
       await AsyncStorage.setItem(ONBOARDING_DATA_KEY, JSON.stringify(updated));
     } catch (error) {
-      console.error('Failed to save onboarding data:', error);
+      // Silently fail - onboarding data won't persist
     }
   },
 
@@ -66,7 +66,7 @@ export const onboardingService = {
     try {
       await AsyncStorage.multiRemove([ONBOARDING_KEY, ONBOARDING_DATA_KEY]);
     } catch (error) {
-      console.error('Failed to reset onboarding:', error);
+      // Silently fail - reset won't complete
     }
   },
 };

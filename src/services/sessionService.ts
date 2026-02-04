@@ -43,7 +43,6 @@ export const getCurrentSessionIndex = async (): Promise<number> => {
 
     return sessionIndex;
   } catch (error) {
-    console.error('Error getting current session:', error);
     return 0;
   }
 };
@@ -73,7 +72,7 @@ export const markSessionCompleted = async (sessionIndex: number): Promise<void> 
     const completedKey = `@today_session_${sessionIndex}_completed`;
     await AsyncStorage.setItem(completedKey, new Date().toISOString());
   } catch (error) {
-    console.error('Error marking session completed:', error);
+    // Silently fail - completion won't be tracked
   }
 };
 
@@ -85,6 +84,6 @@ export const resetSessionProgress = async (): Promise<void> => {
     await AsyncStorage.removeItem(CURRENT_SESSION_KEY);
     await AsyncStorage.removeItem(LAST_PLAYED_DATE_KEY);
   } catch (error) {
-    console.error('Error resetting session progress:', error);
+    // Silently fail - reset won't complete
   }
 };

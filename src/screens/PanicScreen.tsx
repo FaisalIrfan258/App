@@ -7,6 +7,7 @@ import GroundingPrompt from '../components/panic/GroundingPrompt';
 import GroundingPose from '../components/panic/GroundingPose';
 import PanicCompletion from '../components/panic/PanicCompletion';
 import { colors } from '../constants/theme';
+import { useProgress } from '../contexts/ProgressContext';
 
 // Flow steps
 type FlowStep =
@@ -38,6 +39,7 @@ const PanicScreen: React.FC<PanicScreenProps> = ({ navigation }) => {
   const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
   const [breathingCycles, setBreathingCycles] = useState(0);
   const [currentGroundingIndex, setCurrentGroundingIndex] = useState(0);
+  const { recordActivity } = useProgress();
 
   // Handle breathing phase changes
   useEffect(() => {
@@ -99,9 +101,11 @@ const PanicScreen: React.FC<PanicScreenProps> = ({ navigation }) => {
   }, []);
 
   // Handle finish
-  const handleFinish = useCallback(() => {
+  const handleFinish = useCallback(async () => {
+    // Track 3 minutes for panic session
+    await recordActivity(3);
     navigation.goBack();
-  }, [navigation]);
+  }, [navigation, recordActivity]);
 
   // Render current step
   const renderStep = () => {
